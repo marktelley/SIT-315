@@ -1,0 +1,122 @@
+/*
+ *   Copyright (c) 2022 Author: MARK TELLEY. Student ID: 220533036 
+ *   All rights reserved.
+ */
+int celsius = 0;
+const int interruptPin= 2;
+volatile boolean ledOn = false;
+int temp = 0;
+int cel = 0;
+int warning_count = 0;
+int term = 0;
+int limit = 10;
+int count_1 = 0;
+
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(A0, INPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, CHANGE);
+}
+
+void loop()
+{
+  temperatureMeasurement();
+}
+
+const uint8_t BTN_PIN = 2;
+int temp = 0;
+int cel = 0;
+uint8_t buttonPrevState = LOW;
+uint8_t ledState = LOW;
+const int green = 12;
+const int amber = 11;
+const int red = 10;
+  
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(A0, INPUT);
+  pinMode(red, OUTPUT);
+  pinMode(amber, OUTPUT);
+  pinMode(green, OUTPUT);
+  pinMode(BTN_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BTN_PIN), toggle, FALLING);
+}
+
+void loop()
+{
+  delay(500);
+}
+
+void tempcheck(int ledState){
+  cel = (-40 + 0.488155 * (analogRead(A0) - 20));
+  if (cel <= temp) {
+      digitalWrite(green, ledState);
+      digitalWrite(amber, LOW);
+      digitalWrite(red, LOW);
+      Serial.print(cel);
+      Serial.println("C - Temp Ok");
+    }
+    if (cel > temp && cel < 75) {
+      digitalWrite(green, LOW);
+      digitalWrite(amber, ledState);
+      digitalWrite(red, LOW);
+      Serial.print(cel);
+      Serial.println("C - Temp moderate (Watch!)");
+    }
+    if (cel >= 75) {
+      digitalWrite(green, LOW);
+      digitalWrite(amber, LOW);
+      digitalWrite(red, ledState);
+      Serial.print(cel);
+      Serial.println("C - Overheating!");
+    }
+   //delay(500); // Wait for 500 millisecond(s)
+   ledState = !ledState;
+  
+}
+
+void toggle(){
+	uint8_t buttonState = digitalRead(BTN_PIN);
+  	Serial.print(buttonState);
+  	Serial.print(buttonPrevState);
+  	Serial.print(ledState);
+  	Serial.println("");
+  	ledState = !ledState;
+    tempcheck(ledState);
+}
+
+  delay(1000); // Wait for 1000 millisecond(s)
+}
+
+void blink() 
+{
+  // if button has been pressed, ledOn = true and led lights activate
+  if (ledOn)
+  {
+    
+    
+    ledOn = true;
+    digitalWrite(10, HIGH);
+    digitalWrite(11, HIGH);
+    digitalWrite(12, HIGH);
+    delay(5000);
+    Serial.println("Temperature detection interrupted");
+  }
+  else
+  {
+    
+    
+    ledOn = false;
+    digitalWrite(10, LOW);
+    digitalWrite(11, LOW);
+    digitalWrite(12, LOW);
+  }
+}
