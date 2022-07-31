@@ -1,0 +1,75 @@
+/*
+ *   Copyright (c) 2022 Author: MARK TELLEY. Student ID: 220533036 
+ *   All rights reserved.
+ */
+const uint8_t BTN_PIN = 2;
+int temp = 0;
+int cel = 0;
+uint8_t ledState = LOW;
+const int green = 12;
+const int amber = 11;
+const int red = 10;
+volatile bool on = false;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(A0, INPUT);
+  pinMode(red, OUTPUT);
+  pinMode(amber, OUTPUT);
+  pinMode(green, OUTPUT);
+  pinMode(BTN_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BTN_PIN), toggle, FALLING);
+}
+
+bool ledOn(){
+  if(ledState){
+  	on = true;
+  }
+  else{
+  	on = false;
+  }
+  return on;
+}
+
+void loop()
+{
+  delay(500);
+}
+
+void tempcheck(int ledState){
+  cel = (-40 + 0.488155 * (analogRead(A0) - 20));
+  if (cel <= temp) {
+      digitalWrite(green, ledState);
+      digitalWrite(amber, LOW);
+      digitalWrite(red, LOW);
+       if(ledOn())
+        Serial.println( String(cel) +"C - Temp Ok");
+    }
+    if (cel > temp && cel < 75) {
+      digitalWrite(green, LOW);
+      digitalWrite(amber, ledState);
+      digitalWrite(red, LOW);
+      if(ledOn())
+        Serial.println( String(cel) + "C - Temp moderate (Watch!)");
+    }
+    if (cel >= 75) {
+      digitalWrite(green, LOW);
+      digitalWrite(amber, LOW);
+      digitalWrite(red, ledState);
+      if(ledOn())
+        Serial.println( String(cel) + " C - Overheating!");
+    }
+   //delay(500); // Wait for 500 millisecond(s)
+}
+
+void toggle(){
+	uint8_t buttonState = digitalRead(BTN_PIN);
+  	ledState = !ledState;
+    if(ledOn())
+        Serial.println("Interrupt!");
+  	tempcheck(ledState);
+  	
+}
+
+
