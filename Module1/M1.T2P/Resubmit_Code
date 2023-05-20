@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2022 Author: MARK TELLEY. Student ID: 220533036 
+ *   Copyright (c) 2022 Author: MARK TELLEY. Student ID:  
  *   All rights reserved.
  */
 const uint8_t BTN_PIN = 2;
